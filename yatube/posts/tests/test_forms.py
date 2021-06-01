@@ -74,27 +74,6 @@ class PostCreateFormTests(TestCase):
             follow=True
         )
 
-        # # Делаем запрос к странице поста
-        # response = self.author_client.get(
-        #     reverse(
-        #         'post',
-        #         kwargs={'username': 'mr tester', 'post_id': 1}
-        #     )
-        # )
-        # post_0 = response.context['post']
-        # post_text = post_0.text
-        # post_pub_date = post_0.pub_date.strftime('%d.%m.%Y//%H:%M')
-        # post_author = str(post_0.author)
-        # # post_group = str(post_0.group)
-        # self.assertEqual(post_text, 'Текст! *3')
-        # self.assertEqual(
-        #     post_pub_date, dt.datetime.utcnow().strftime(
-        #         '%d.%m.%Y//%H:%M'
-        #     )
-        # )
-        # self.assertEqual(post_author, 'mr tester')
-        # # self.assertEqual(post_group, 'Test form')
-
         response = self.authorized_client.get(reverse('index'))
         post_0 = response.context.get('page').object_list[0]
         post_text = post_0.text
