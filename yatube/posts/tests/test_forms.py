@@ -1,8 +1,8 @@
 import datetime as dt
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
-
 from posts.models import Group, Post
 
 User = get_user_model()
@@ -158,58 +158,3 @@ class PostCreateFormTests(TestCase):
                 # Проверяем, что количество постов в базе posts_count не
                 # изменилось
                 self.assertEqual(Post.objects.count(), posts_count)
-
-    # def test_guest_client_posts_new(self):
-    #     """Проверка перенаправления неавторизованного пользователя при попытке
-    #     опубликовать пост на страницу авторизации, и что
-    #     пост при этом не создаётся.
-    #     """
-    #     # Считаем количество постов
-    #     posts_count = Post.objects.count()
-
-    #     # Создаём "форму"
-    #     form = {
-    #         'text': 'guest_client: "Текст!"',
-    #         'group': PostCreateFormTests.group.id
-    #     }
-
-    #     # Отправляем POST-запрос на создание нового поста
-    #     response = self.guest_client.post(
-    #         reverse('new_post'),
-    #         data=form,
-    #         follow=True
-    #     )
-    #     # Проверяем, что неавторизованный пользователь перенаправляется на
-    #     # страницу авторизации
-    #     self.assertRedirects(response, ('/auth/login/?next=/new/'))
-    #     # Проверяем, что количество постов в базе posts_count не изменилось
-    #     self.assertEqual(Post.objects.count(), posts_count)
-
-    # def test_guest_client_gets_post_edit(self):
-    #     """Проверка перенаправления неавторизованного пользователя при попытке
-    #     отредактировать пост на страницу авторизации, и что
-    #     пост при этом не создаётся.
-    #     """
-    #     # Считаем количество постов
-    #     posts_count = Post.objects.count()
-
-    #     # Создаём "форму"
-    #     form = {
-    #         'text': 'guest_client: "Текст!"',
-    #         'group': PostCreateFormTests.group.id
-    #     }
-
-    #     # Отправляем POST-запрос на создание нового поста
-    #     response = self.guest_client.post(
-    #         reverse(
-    #             'post_edit',
-    #             kwargs={'username': 'tester', 'post_id': 1}
-    #         ),
-    #         data=form,
-    #         follow=True
-    #     )
-    #     # Проверяем, что неавторизованный пользователь перенаправляется на
-    #     # страницу авторизации
-    #     self.assertRedirects(response, ('/auth/login/?next=/tester/1/edit/'))
-    #     # Проверяем, что количество постов в базе posts_count не изменилось
-    #     self.assertEqual(Post.objects.count(), posts_count)
