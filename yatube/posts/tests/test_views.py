@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 from time import sleep
 
-from ..models import Group, Post
+from posts.models import Group, Post
 
 User = get_user_model()
 
@@ -47,8 +47,6 @@ class PostPagesTest(TestCase):
         # Создаём клиента-автора поста
         self.author_client = Client()
         self.author_client.force_login(PostPagesTest.user)
-        # Создаём неавторизованного пользователя
-        self.guest_client = Client()
 
     def test_pages_use_correct_template(self):
         """Задание 1: Проверяем будет ли вызван корректный шаблон при обращении к
@@ -195,40 +193,6 @@ class PostPagesTest(TestCase):
             )
         )
 
-        # # Получаем список постов в группе "Тест views. Модель Post"
-        # response = self.authorized_client.get(
-        #     reverse(
-        #         'group_posts',
-        #         kwargs={'group_slug': 'views-test'}
-        #     )
-        # )
-
         # Проверяем что post_0 не содержится в списке постов группы
         # "Другая группа."
         self.assertNotIn(post_0, response.context.get('page').object_list)
-
-    def test_static_pages_accessible_by_name(self):
-        """Задание 5: Проверяем что статические страницы доступны
-        неавторизованному пользователю.
-        """
-        reverse_names = [
-            reverse('about:author'),
-            reverse('about:tech')
-        ]
-        for name in reverse_names:
-            with self.subTest(name=name):
-                response = self.guest_client.get(name)
-                self.assertEqual(response.status_code, 200)
-
-    def test_static_pages_uses_correct_templates(self):
-        """Задание 5: Проверяем, что при запросе неавторизованного
-        пользователя статических страниц отображаются ожидаемые шаблоны.
-        """
-        templates_vs_names = {
-            'tech.html': reverse('about:tech'),
-            'author.html': reverse('about:author')
-        }
-        for template, name in templates_vs_names.items():
-            with self.subTest(name=name):
-                response = self.guest_client.get(name)
-                self.assertTemplateUsed(response, template)
