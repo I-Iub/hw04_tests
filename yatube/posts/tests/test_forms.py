@@ -124,37 +124,59 @@ class PostCreateFormTests(TestCase):
             response_old_group.context.get('page').object_list.count(), 0
         )
 
-    def test_guest_client_posts_new_and_edit(self):
+    def test_guest_client_posts_new_post(self):
         """Проверка перенаправления неавторизованного пользователя при попытке
-        опубликовать пост (через POST-запрос) на страницу авторизации, и что
-        пост при этом не создаётся.
+        создать и опубликовать пост (через POST-запрос) на страницу
+        авторизации, и что пост при этом не создаётся.
         """
-        expected_vs_revnames = {
-            '/auth/login/?next=/new/': reverse('new_post'),
-            '/auth/login/?next=/tester/1/edit/': reverse(
-                'post_edit',
-                kwargs={'username': 'tester', 'post_id': 1}
-            )
-        }
+        login_url = reverse('login')
+        new_post_url = reverse('new_post')
         # Считаем количество постов
         posts_count = Post.objects.count()
-
         # Создаём "форму"
         form = {
             'text': 'guest_client: "Текст!"',
             'group': PostCreateFormTests.group.id
         }
-        for expected, name in expected_vs_revnames.items():
-            with self.subTest(name=name):
-                # Отправляем POST-запрос на создание нового поста
-                response = self.guest_client.post(
-                    name,
-                    data=form,
-                    follow=True
-                )
-                # Проверяем, что неавторизованный пользователь
-                # перенаправляется на страницу авторизации
-                self.assertRedirects(response, expected)
-                # Проверяем, что количество постов в базе posts_count не
-                # изменилось
-                self.assertEqual(Post.objects.count(), posts_count)
+        # Отправляем POST-запрос на создание нового поста
+        response = self.guest_client.post(
+            new_post_url,
+            data=form,
+            follow=True
+        )
+        # Проверяем, что неавторизованный пользователь
+        # перенаправляется на страницу авторизации
+        self.assertRedirects(response, f'{login_url}?next={new_post_url}')
+        # Проверяем, что количество постов в базе posts_count не
+        # изменилось
+        self.assertEqual(Post.objects.count(), posts_count)
+
+    def test_guest_client_edit_post(self):
+        """Проверка перенаправления неавторизованного пользователя при попытке
+        отредактировать и опубликовать пост (через POST-запрос) на страницу
+        авторизации, и что пост при этом не создаётся.
+        """
+        login_url = reverse('login')
+        edit_url = reverse(
+            'post_edit',
+            kwargs={'username': 'tester', 'post_id': 1}
+        )
+        # Считаем количество постов
+        posts_count = Post.objects.count()
+        # Создаём "форму"
+        form = {
+            'text': 'guest_client: "Текст!"',
+            'group': PostCreateFormTests.group.id
+        }
+        # Отправляем POST-запрос на создание нового поста
+        response = self.guest_client.post(
+            edit_url,
+            data=form,
+            follow=True
+        )
+        # Проверяем, что неавторизованный пользователь
+        # перенаправляется на страницу авторизации
+        self.assertRedirects(response, f'{login_url}?next={edit_url}')
+        # Проверяем, что количество постов в базе posts_count не
+        # изменилось
+        self.assertEqual(Post.objects.count(), posts_count)
